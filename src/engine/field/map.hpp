@@ -1,7 +1,9 @@
+#pragma once
+
 #include <array>
 #include <vector>
 
-#include "hexData.hpp"
+#include "hex.hpp"
 
 
 struct HexCoord {
@@ -14,12 +16,15 @@ class Map {
  private:
   int width;
   int height;
-  std::vector<HexData> hexes;
+  std::vector<Hex> hexes;
   std::vector<std::array<int, 6>> neighbors;
 
+  void computeNeighbors();
+
+
  public:
-  const HexData& get(HexCoord coord) const;
-  const HexData& get(int index) const;
+  const Hex& get(HexCoord coord) const;
+  const Hex& get(int index) const;
 
   int toIndex(HexCoord coord) const;
   HexCoord toCoord(int index) const;

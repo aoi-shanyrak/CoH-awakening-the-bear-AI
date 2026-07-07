@@ -23,19 +23,21 @@ int Map::getNeighborIndex(int index, Direction dir) const {
 
   assert(x + y + z == 0);
 
-  HexCoord neighbor_coord;
-  neighbor_coord.q = x;
-  neighbor_coord.r = y;
+  int nq = x, nr = y;
 
-  return toIndex(neighbor_coord);
+  if (nq < 0 || nq >= width || nr < 0 || nr >= height) {
+    return -1;
+  }
+
+  return toIndex({nq, nr});
 }
 
 
-const HexData& Map::get(HexCoord coord) const {
+const Hex& Map::get(HexCoord coord) const {
   return hexes[toIndex(coord)];
 }
 
-const HexData& Map::get(int index) const {
+const Hex& Map::get(int index) const {
   return hexes[index];
 }
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 
 
@@ -14,8 +16,6 @@ enum class TerrainType : uint8_t {
 
 struct TerrainProps {
   int8_t foot_penalty_AP;
-  // tracked
-  // wheeled
   int8_t bonus_DR;
   bool blocks_LOS;
 };
