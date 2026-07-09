@@ -1,11 +1,17 @@
 #pragma once
 
-#include "direction.hpp"
+#include "../directions.hpp"
 #include "terrain.hpp"
 
 
+struct HexCoord {
+  int q;
+  int r;
+};
+
+
 struct Hex {
-  TerrainType terrain;
+  Terrain terrain;
   uint8_t elevation;
   uint8_t walls_bitmask;
   bool has_road;

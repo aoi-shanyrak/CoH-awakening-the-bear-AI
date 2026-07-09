@@ -1,4 +1,5 @@
 #include <cassert>
+#include <optional>
 
 #include "map.hpp"
 
@@ -13,7 +14,17 @@ const int CUBE_DELTAS[6][3] = {
 };
 
 
-int Map::getNeighborIndex(int index, Direction dir) const {
+void Map::computeNeighbors() {
+  neighbors.resize(hexes.size());
+
+  for (int index = 0; index < hexes.size(); ++index) {
+    for (int dir = 0; dir < 6; ++dir) {
+      neighbors[index][dir] = getNeighborIndexForCompute(index, static_cast<Direction>(dir));
+    }
+  }
+}
+
+std::optional<int> Map::getNeighborIndexForCompute(int index, Direction dir) const {
   auto [q, r] = toCoord(index);
   int x = q, y = r, z = -q - r;
 
@@ -25,11 +36,15 @@ int Map::getNeighborIndex(int index, Direction dir) const {
 
   int nq = x, nr = y;
 
-  if (nq < 0 || nq >= width || nr < 0 || nr >= height) {
-    return -1;
+  if (!isValidCoord({nq, nr})) {
+    return std::nullopt;
   }
 
   return toIndex({nq, nr});
+}
+
+std::optional<int> Map::getNeighborIndex(int index, Direction dir) const {
+  return neighbors[index][static_cast<int>(dir)];
 }
 
 
@@ -48,4 +63,13 @@ int Map::toIndex(HexCoord coord) const {
 
 HexCoord Map::toCoord(int index) const {
   return {index % width, index / width};
+}
+
+
+bool Map::isValidCoord(HexCoord coord) const {
+  return coord.q >= 0 && coord.q < width && coord.r >= 0 && coord.r < height;
+}
+
+bool Map::isValidIndex(int index) const {
+  return isValidCoord(toCoord(index));
 }
