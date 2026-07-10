@@ -18,6 +18,6 @@ struct Hex {
 };
 
 
-inline bool hasWall(const Hex& hex, Direction dir) {
+inline bool hasWallatDirection(const Hex& hex, Direction dir) {
   return (hex.walls_bitmask & (1 << static_cast<uint8_t>(dir))) != 0;
 }

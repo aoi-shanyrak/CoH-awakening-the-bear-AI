@@ -3,4 +3,4 @@
 #include <cstdint>
 
 
-enum class Nation : uint8_t { Germany, SovietUnion };
+enum class Nation : uint8_t { Germany = 0, SovietUnion = 1 };

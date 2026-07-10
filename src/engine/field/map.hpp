@@ -19,10 +19,16 @@ class Map {
 
 
  public:
+  Map(int width, int height, const std::vector<Hex>& hexes);
+
+
   const Hex& get(HexCoord coord) const;
   const Hex& get(int index) const;
 
   std::optional<int> getNeighborIndex(int index, Direction dir) const;
+
+
+  uint8_t distance(HexCoord a, HexCoord b) const;
 
 
   int toIndex(HexCoord coord) const;

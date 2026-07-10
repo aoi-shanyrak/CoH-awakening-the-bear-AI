@@ -32,6 +32,6 @@ static constexpr std::array<UnitProps, 5> UNIT_DATA {
      {Nation::SovietUnion, UnitType::MMG_Maxim_Squad, false, 2, 3, 9, 3, 10, 12}}};
 
 
-inline constexpr const UnitProps& get_unit_props(UnitType unit) {
+inline constexpr const UnitProps& getUnitProps(UnitType unit) {
   return UNIT_DATA[static_cast<uint8_t>(unit)];
 }

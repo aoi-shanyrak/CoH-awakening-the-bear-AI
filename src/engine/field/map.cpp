@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include <optional>
 
 #include "map.hpp"
@@ -12,6 +13,11 @@ const int CUBE_DELTAS[6][3] = {
     {-1, 0, 1},  // West
     {0, -1, 1}  // NorthWest
 };
+
+
+Map::Map(int width, int height, const std::vector<Hex>& hexes) : width(width), height(height), hexes(hexes) {
+  computeNeighbors();
+}
 
 
 void Map::computeNeighbors() {
@@ -45,6 +51,14 @@ std::optional<int> Map::getNeighborIndexForCompute(int index, Direction dir) con
 
 std::optional<int> Map::getNeighborIndex(int index, Direction dir) const {
   return neighbors[index][static_cast<int>(dir)];
+}
+
+
+uint8_t Map::distance(HexCoord a, HexCoord b) const {
+  int x1 = a.q, y1 = a.r, z1 = -a.q - a.r;
+  int x2 = b.q, y2 = b.r, z2 = -b.q - b.r;
+
+  return (std::abs(x1 - x2) + std::abs(y1 - y2) + std::abs(z1 - z2)) / 2;
 }
 
 
