@@ -14,9 +14,7 @@ namespace FireZone {
 
   std::optional<RangeType> isInRange(const Unit& attacker, HexCoord target, const Map& map);
 
-  bool isInArc(const Unit& attacker, HexCoord target, const Map& map);
-
-  bool isInFireZone(const Unit& attacker, HexCoord target, const Map& map);
+  bool isInArc(const Unit& attacker, HexCoord target);
 
 
 }

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "nations.hpp"
+#include "../nations.hpp"
 
 
 class VPcounter {

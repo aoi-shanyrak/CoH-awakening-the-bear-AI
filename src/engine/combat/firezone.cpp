@@ -17,3 +17,20 @@ std::optional<FireZone::RangeType> FireZone::isInRange(const Unit& attacker, Hex
     return std::nullopt;
   }
 }
+
+
+bool isInArc(const Unit& attacker, HexCoord target) {
+  HexCoord attacker_pos {attacker.getPosition()};
+
+  int dq {target.q - attacker_pos.q};
+  int dr {target.r - attacker_pos.r};
+
+  switch (attacker.getDirection()) {
+    case Direction::North: return dq >= 0 && dr <= 0;
+    case Direction::NorthEast: return dq + dr >= 0 && dq >= 0;
+    case Direction::NorthWest: return dq + dr <= 0 && dr <= 0;
+    case Direction::South: return dq <= 0 && dr >= 0;
+    case Direction::SouthEast: return dq + dr <= 0 && dq <= 0;
+    case Direction::SouthWest: return dq + dr >= 0 && dr >= 0;
+  }
+}
