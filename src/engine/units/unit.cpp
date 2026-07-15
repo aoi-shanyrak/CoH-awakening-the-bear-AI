@@ -1,6 +1,10 @@
 #include "unit.hpp"
 
 
+using namespace UnitTypes;
+using namespace Action_masks;
+
+
 Unit::Unit(HexCoord position, UnitType type, Direction direction)
     : position(position), type(type), direction(direction), is_fresh(true), is_stressed(false), hit(std::nullopt) {
 }
@@ -21,8 +25,20 @@ bool Unit::isFresh() const {
 bool Unit::isStressed() const {
   return is_stressed;
 }
-std::optional<HitMarkers> Unit::getHit() const {
-  return hit;
+
+
+bool Unit::canAttack() const {
+  return canPerformAction(ActionType::Attack);
+}
+bool Unit::canMove() const {
+  return canPerformAction(ActionType::Move);
+}
+bool Unit::canRally() const {
+  return canPerformAction(ActionType::Rally);
+}
+bool Unit::canPerformAction(ActionType action) const {
+  return (hit.has_value()) ? (getHitMarkerProps(hit.value()).allowed_actions & (1 << static_cast<uint8_t>(action))) != 0
+                           : true;
 }
 
 

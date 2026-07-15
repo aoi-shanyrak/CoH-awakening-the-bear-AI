@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "../checks/random_generator.hpp"
 #include "../field/map.hpp"
 #include "../markers/VPcounter.hpp"
 #include "../markers/control.hpp"
@@ -12,11 +13,14 @@
 
 struct State {
   uint8_t round;
-  Nation turn;
+  Nation player;
   VPcounter vp_count;
 
+  std::vector<Unit> units;
+
   const Map* map;
-  std::vector<Unit> soviet_units;
-  std::vector<Unit> germany_units;
   std::vector<ControlMarker> control_markers;
+
+
+  RandomGenerator rng;
 };

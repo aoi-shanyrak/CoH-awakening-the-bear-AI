@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <optional>
+#include <utility>
+#include <vector>
 
 #include "field/hex.hpp"
 
@@ -11,6 +12,10 @@ enum class ActionType : uint8_t { Attack, Move, Rally, Stall, PlayCard, Pass };
 
 struct Action {
   ActionType type;
-  std::optional<HexCoord> unit_hex;
-  std::optional<HexCoord> target_hex;
+  int8_t unitIndex;
+
+  int8_t action_check;
+
+  HexCoord target_hex;
+  std::vector<std::pair<int8_t, int8_t>> targets_and_checks_for_attack;
 };

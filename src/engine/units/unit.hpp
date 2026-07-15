@@ -11,23 +11,28 @@
 class Unit {
  private:
   HexCoord position;
-  UnitType type;
+  UnitTypes::UnitType type;
   Direction direction;
   bool is_fresh;
   bool is_stressed;
   std::optional<HitMarkers> hit;
 
+  bool canPerformAction(ActionType action) const;
+
 
  public:
-  Unit(HexCoord position, UnitType type, Direction direction);
+  Unit(HexCoord position, UnitTypes::UnitType type, Direction direction);
 
 
   HexCoord getPosition() const;
-  UnitType getType() const;
+  UnitTypes::UnitType getType() const;
   Direction getDirection() const;
   bool isFresh() const;
   bool isStressed() const;
-  std::optional<HitMarkers> getHit() const;
+
+  bool canAttack() const;
+  bool canMove() const;
+  bool canRally() const;
 
   Nation getNation() const;
   bool isCrewedUnit() const;

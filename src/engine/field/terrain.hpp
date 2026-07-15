@@ -18,7 +18,7 @@ enum class Terrain : uint8_t {
 struct TerrainProps {
   Terrain type;
   int8_t foot_penalty_AP;
-  int8_t bonus_DR;
+  int8_t DR_modifier;
   bool blocks_LOS;
 };
 

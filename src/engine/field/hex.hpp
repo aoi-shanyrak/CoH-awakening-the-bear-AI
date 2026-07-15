@@ -5,19 +5,29 @@
 
 
 struct HexCoord {
-  int q;
-  int r;
+  int16_t q;
+  int16_t r;
 };
 
 
-struct Hex {
+class Hex {
+ private:
+  HexCoord position;
   Terrain terrain;
   uint8_t elevation;
   uint8_t walls_bitmask;
   bool has_road;
+
+
+ public:
+  Hex(HexCoord pos, Terrain terrain, uint8_t elevation, uint8_t walls_bitmask, bool has_road);
+
+  bool hasWallatDirection(Direction dir);
+
+  HexCoord getPosition() const;
+  int8_t getFootPenaltyAP() const;
+  int8_t getDRmodifier() const;
+  bool blocksLOS() const;
+  uint8_t getElevation() const;
+  bool hasRoad() const;
 };
-
-
-inline bool hasWallatDirection(const Hex& hex, Direction dir) {
-  return (hex.walls_bitmask & (1 << static_cast<uint8_t>(dir))) != 0;
-}
