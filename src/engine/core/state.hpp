@@ -22,5 +22,5 @@ struct State {
   std::vector<ControlMarker> control_markers;
 
 
-  RandomGenerator rng;
+  Random::RandomGenerator rng;
 };

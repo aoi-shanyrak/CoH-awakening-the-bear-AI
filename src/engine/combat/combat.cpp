@@ -1,86 +1,132 @@
 #include <algorithm>
+#include <iterator>
 
 #include "combat.hpp"
 
 
 using namespace Firezone;
-using namespace Combat;
-using namespace CombatImpl;
+using namespace ActionDetails;
+using namespace Combat::CombatImpl;
 
 
-std::vector<Action> getValidCombatActions(const State& state, Nation player) {
-  std::vector<Action> actions {};
+namespace Combat {
 
-  std::map<HexCoord, std::vector<int8_t>> units_in_hex {};
-  for (int8_t i {0}; i < state.units.size(); ++i) {
-    const auto& unit {state.units[i]};
-    units_in_hex[unit.getPosition()].push_back(i);
+
+  std::vector<Action> getValidCombatActions(const State& state) {
+    std::vector<Action> actions {};
+
+    auto units_in_hex {getUnitsInHexes(state)};
+    removeHexesWithoutEnemyUnits(units_in_hex, state);
+
+    for (int8_t attackerIdx {0}; attackerIdx < state.units.size(); ++attackerIdx) {
+      const Unit& attacker {state.units[attackerIdx]};
+      if (attacker.getNation() != state.player || !attacker.canAttack()) continue;
+
+      auto attackerActions {buildCombatActionsForAttacker(state, units_in_hex, attackerIdx)};
+      actions.reserve(actions.size() + attackerActions.size());
+      actions.insert(actions.end(), std::make_move_iterator(attackerActions.begin()),
+                     std::make_move_iterator(attackerActions.end()));
+    }
+    return actions;
   }
-  removeHexesWithoutEnemyUnits(units_in_hex, state);
 
-  for (int8_t attackerIdx {0}; attackerIdx < state.units.size(); ++attackerIdx) {
-    const Unit& attacker {state.units[attackerIdx]};
-    if (attacker.getNation() != player || !attacker.canAttack()) continue;
 
-    for (const auto& [hex, unit_indices] : units_in_hex) {
-      auto range {isInFirezone(*state.map, attacker, hex)};
-      if (!range) continue;
+  namespace CombatImpl {
 
-      std::vector<std::pair<int8_t, int8_t>> targets_and_checks {};
-      int8_t terrainDRmod {state.map->get(hex).getDRmodifier()};
+
+    std::map<HexCoord, std::vector<int8_t>> getUnitsInHexes(const State& state) {
+      std::map<HexCoord, std::vector<int8_t>> units_in_hex {};
+      for (int8_t i {0}; i < state.units.size(); ++i) {
+        const auto& unit {state.units[i]};
+        units_in_hex[unit.getPosition()].push_back(i);
+      }
+      return units_in_hex;
+    }
+
+    void removeHexesWithoutEnemyUnits(std::map<HexCoord, std::vector<int8_t>>& units_in_hex, const State& state) {
+      units_in_hex.erase(std::remove_if(units_in_hex.begin(), units_in_hex.end(),
+                                        [&](const auto& pair) {
+                                          const auto& [_, unit_indices] = pair;
+                                          return std::none_of(unit_indices.begin(), unit_indices.end(),
+                                                              [&](int8_t index) {
+                                                                return state.units[index].getNation() != state.player;
+                                                              });
+                                        }),
+                         units_in_hex.end());
+    }
+
+
+    std::vector<Action> buildAttackActionsForAttacker(const State& state,
+                                                      const std::map<HexCoord, std::vector<int8_t>> units_in_hex,
+                                                      int8_t attackerIdx) {
+      std::vector<Action> actions {};
+      const Unit& attacker {state.units[attackerIdx]};
+
+      for (const auto& [hex, unit_indices] : units_in_hex) {
+        auto range {isInFirezone(*state.map, attacker, hex)};
+        if (!range) continue;
+
+        int8_t terrainDRmod {state.map->get(hex).getDRmodifier()};
+        const AttackContext context {attacker, *range, terrainDRmod};
+        std::vector<Target> targets_and_checks {getTargets(state, context, unit_indices)};
+
+        if (!targets_and_checks.empty()) {
+          Action action {ActionType::Attack, attackerIdx, attacker.getAttackAPCost(), hex,
+                         std::move(targets_and_checks)};
+          actions.push_back(std::move(action));
+        }
+      }
+      return actions;
+    }
+
+    std::vector<Target> getTargets(const State& state, const AttackContext& context,
+                                   const std::vector<int8_t> unit_indices) {
+      std::vector<Target> targets {};
       for (int8_t enemyIdx : unit_indices) {
         const Unit& defender {state.units[enemyIdx]};
-        int8_t hitNumber {getHitNumber(attacker, defender, *range, terrainDRmod)};
-        targets_and_checks.emplace_back(enemyIdx, hitNumber);
+        int8_t hitNumber {getHitNumber(context, defender)};
+        targets.push_back({enemyIdx, hitNumber});
       }
-
-      if (!targets_and_checks.empty()) {
-        Action action {ActionType::Attack, attackerIdx, attacker.getAttackAPCost(), hex, std::move(targets_and_checks)};
-        actions.push_back(std::move(action));
-      }
+      return targets;
     }
+
+
+    int8_t getHitNumber(const AttackContext& context, const Unit& defender) {
+      auto AR {getAttackRating(context.attacker, context.range)};
+      auto DR {getDefenseRating(context, defender)};
+      return AR - DR;
+    }
+
+    int8_t getAttackRating(const Unit& attacker, Firezone::RangeType range) {
+      int8_t AR {attacker.getFirepower()};
+      switch (range) {
+        case Firezone::RangeType::Close: AR += (attacker.isCrewedUnit()) ? -2 : 4; break;
+        case Firezone::RangeType::Short: AR += 3; break;
+        case Firezone::RangeType::Medium: break;
+        case Firezone::RangeType::Long: AR += -2; break;
+      }
+      return AR;
+    }
+
+    int8_t getDefenseRating(const AttackContext& context, const Unit& defender) {
+      auto& [attacker, range, terrainDRmod] {context};
+
+      auto defense_type {getDefenseType(context, defender)};
+      auto defense {(defense_type == UnitTypes::DefenseType::Front) ? defender.getFrontDefense()
+                                                                    : defender.getFlankDefense()};
+      return defense + context.terrainDRmod;
+    }
+
+    UnitTypes::DefenseType getDefenseType(const AttackContext& context, const Unit& defender) {
+      if (context.range == Firezone::RangeType::Close) {
+        return UnitTypes::DefenseType::Flank;
+      }
+      return (isInArc(defender, context.attacker.getPosition())) ? UnitTypes::DefenseType::Front
+                                                                 : UnitTypes::DefenseType::Flank;
+    }
+
+
   }
-  return actions;
-}
 
 
-void removeHexesWithoutEnemyUnits(std::map<HexCoord, std::vector<int8_t>>& units_in_hex, const State& state) {
-  units_in_hex.erase(std::remove_if(units_in_hex.begin(), units_in_hex.end(),
-                                    [&](const auto& pair) {
-                                      const auto& [_, unit_indices] = pair;
-                                      return std::none_of(unit_indices.begin(), unit_indices.end(), [&](int8_t index) {
-                                        return state.units[index].getNation() != state.player;
-                                      });
-                                    }),
-                     units_in_hex.end());
-}
-
-
-int8_t getHitNumber(const Unit& attacker, const Unit& defender, Firezone::RangeType range, int8_t terrainDRmod) {
-  auto AR {getAttackRating(attacker, range)};
-  auto DR {getDefenseRating(defender, attacker, range) + terrainDRmod};
-  return AR - DR;
-}
-
-int8_t getAttackRating(const Unit& attacker, Firezone::RangeType range) {
-  int8_t AR {attacker.getFirepower()};
-  switch (range) {
-    case Firezone::RangeType::Close: AR += (attacker.isCrewedUnit()) ? -2 : 4; break;
-    case Firezone::RangeType::Short: AR += 3; break;
-    case Firezone::RangeType::Medium: break;
-    case Firezone::RangeType::Long: AR += -2; break;
-  }
-  return AR;
-}
-
-int8_t getDefenseRating(const Unit& defender, const Unit& attacker, Firezone::RangeType range) {
-  auto defense_type {getDefenseType(defender, attacker, range)};
-  return (defense_type == UnitTypes::DefenseType::Front) ? defender.getFrontDefense() : defender.getFlankDefense();
-}
-
-UnitTypes::DefenseType getDefenseType(const Unit& defender, const Unit& attacker, Firezone::RangeType range) {
-  if (range == Firezone::RangeType::Close) {
-    return UnitTypes::DefenseType::Flank;
-  }
-  return (isInArc(defender, attacker.getPosition())) ? UnitTypes::DefenseType::Front : UnitTypes::DefenseType::Flank;
 }

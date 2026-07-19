@@ -13,7 +13,7 @@ struct HitMarkerProps {
   HitMarkers type;
   int8_t rally_number;
 
-  uint8_t allowed_actions;
+  char allowed_actions;
 
   int8_t diff_move_AP_cost;
   int8_t diff_attack_AP_cost;
@@ -28,11 +28,11 @@ struct HitMarkerProps {
 
 namespace Action_masks {
 
-  static constexpr uint8_t ATTACK = 1 << static_cast<uint8_t>(ActionType::Attack);
-  static constexpr uint8_t MOVE = 1 << static_cast<uint8_t>(ActionType::Move);
-  static constexpr uint8_t RALLY = 1 << static_cast<uint8_t>(ActionType::Rally);
+  static constexpr char ATTACK = 1 << static_cast<char>(ActionType::Attack);
+  static constexpr char MOVE = 1 << static_cast<char>(ActionType::Move);
+  static constexpr char RALLY = 1 << static_cast<char>(ActionType::Rally);
 
-  static constexpr std::array<uint8_t, 8> ALLOWED_ACTION_MASKS {
+  static constexpr std::array<char, 8> ALLOWED_ACTION_MASKS {
       RALLY, /*                 Stunned    */
       ATTACK | MOVE | RALLY, /* Unnerved   */
       0, /*                     Destroyed  */

@@ -3,6 +3,17 @@
 #include "random_generator.hpp"
 
 
+using namespace Random;
+
+
+int8_t RandomGenerator::roll(CheckType dice) {
+  switch (dice) {
+    case CheckType::D10: return rollD10();
+    case CheckType::D6_1: return rollD6_1();
+    case CheckType::D6_2: return rollD6_2();
+  }
+}
+
 int8_t RandomGenerator::rollD6_2() {
   return rollD6_1() + rollD6_1();
 }
@@ -20,4 +31,10 @@ int8_t RandomGenerator::rollD10() {
 int RandomGenerator::rollInt(int min, int max) {
   std::uniform_int_distribution<int> dist(min, max);
   return dist(rng);
+}
+
+
+bool Check::isSuccess() {
+  int8_t targetNumber = (dice == CheckType::D10) ? number + 1 : number;
+  return targetNumber <= rng.roll(dice);
 }
