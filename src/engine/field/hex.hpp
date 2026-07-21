@@ -25,9 +25,12 @@ class Hex {
   bool hasWallatDirection(Direction dir);
 
   HexCoord getPosition() const;
-  int8_t getFootPenaltyAP() const;
-  int8_t getDRmodifier() const;
+  Terrain getTerrain() const;
   bool blocksLOS() const;
   uint8_t getElevation() const;
   bool hasRoad() const;
+
+  int8_t getFootPenaltyAP() const;
+  int8_t getDRmodifier() const;
+  int8_t getCoverModifier() const;
 };

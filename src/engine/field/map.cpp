@@ -20,7 +20,6 @@ void Map::computeNeighbors() {
     }
   }
 }
-
 int16_t Map::getNeighborIndexForCompute(int16_t index, Direction dir) const {
   auto [q, r] = toCoord(index);
   int16_t x = q, y = r, z = -q - r;
@@ -37,7 +36,6 @@ int16_t Map::getNeighborIndexForCompute(int16_t index, Direction dir) const {
   }
   return toIndex({nq, nr});
 }
-
 std::optional<int16_t> Map::getNeighborIndex(int16_t index, Direction dir) const {
   int16_t neighborIndex = neighbors[index][static_cast<int8_t>(dir)];
   if (neighborIndex == invalid_index) {
@@ -46,6 +44,10 @@ std::optional<int16_t> Map::getNeighborIndex(int16_t index, Direction dir) const
   return std::optional<int16_t>(neighborIndex);
 }
 
+
+bool Map::hasLineOfSight(HexCoord start, HexCoord end) const {
+  return true;  // TODO: Implement line of sight algorithm
+}
 
 uint8_t Map::distance(HexCoord a, HexCoord b) const {
   int x1 = a.q, y1 = a.r, z1 = -a.q - a.r;
@@ -70,7 +72,6 @@ HexCoord Map::toCoord(int16_t index) const {
   assert(isValidIndex(index));
   return {static_cast<int16_t>(index % width), static_cast<int16_t>(index / width)};
 }
-
 bool Map::isValidCoord(HexCoord coord) const {
   return coord.q >= 0 && coord.q < width && coord.r >= 0 && coord.r < height;
 }

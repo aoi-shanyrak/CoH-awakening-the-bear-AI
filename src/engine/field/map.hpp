@@ -35,10 +35,13 @@ class Map {
 
   const Hex& get(HexCoord coord) const;
   const Hex& get(int16_t index) const;
-
   std::optional<int16_t> getNeighborIndex(int16_t index, Direction dir) const;
 
+
+  bool hasLineOfSight(HexCoord start, HexCoord end) const;
+
   uint8_t distance(HexCoord a, HexCoord b) const;
+
 
   int16_t toIndex(HexCoord coord) const;
   HexCoord toCoord(int16_t index) const;

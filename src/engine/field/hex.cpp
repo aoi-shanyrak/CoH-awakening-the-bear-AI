@@ -14,11 +14,8 @@ bool Hex::hasWallatDirection(Direction dir) {
 HexCoord Hex::getPosition() const {
   return position;
 }
-int8_t Hex::getFootPenaltyAP() const {
-  return get_terrain_props(terrain).foot_penalty_AP;
-}
-int8_t Hex::getDRmodifier() const {
-  return get_terrain_props(terrain).DR_modifier;
+Terrain Hex::getTerrain() const {
+  return terrain;
 }
 bool Hex::blocksLOS() const {
   return get_terrain_props(terrain).blocks_LOS;
@@ -28,4 +25,15 @@ uint8_t Hex::getElevation() const {
 }
 bool Hex::hasRoad() const {
   return has_road;
+}
+
+
+int8_t Hex::getFootPenaltyAP() const {
+  return get_terrain_props(terrain).foot_penalty_AP;
+}
+int8_t Hex::getDRmodifier() const {
+  return get_terrain_props(terrain).DR_modifier;
+}
+int8_t Hex::getCoverModifier() const {
+  return get_terrain_props(terrain).cover_modifier;
 }

@@ -13,7 +13,7 @@
 
 struct State {
   uint8_t round;
-  Nation player;
+  Nation turn;
   VPcounter vp_count;
 
   std::vector<Unit> units;

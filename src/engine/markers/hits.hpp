@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "../action.hpp"
+#include "../action/action.hpp"
 
 
 enum class HitMarkers : uint8_t { Stunned, Unnerved, Destroyed, Panicked, Pinned, Suppressed, Cowering, Berserk };
@@ -31,16 +31,17 @@ namespace Action_masks {
   static constexpr char ATTACK = 1 << static_cast<char>(ActionType::Attack);
   static constexpr char MOVE = 1 << static_cast<char>(ActionType::Move);
   static constexpr char RALLY = 1 << static_cast<char>(ActionType::Rally);
+  static constexpr char STALL = 1 << static_cast<char>(ActionType::Stall);
 
   static constexpr std::array<char, 8> ALLOWED_ACTION_MASKS {
-      RALLY, /*                 Stunned    */
-      ATTACK | MOVE | RALLY, /* Unnerved   */
+      RALLY | STALL, /*                 Stunned    */
+      ATTACK | MOVE | RALLY | STALL, /* Unnerved   */
       0, /*                     Destroyed  */
-      MOVE | RALLY, /*          Panicked   */
-      ATTACK | RALLY, /*        Pinned     */
-      ATTACK | MOVE | RALLY, /* Suppressed */
-      ATTACK | MOVE | RALLY, /* Cowering   */
-      ATTACK | MOVE | RALLY /*  Berserk    */
+      MOVE | RALLY | STALL, /*          Panicked   */
+      ATTACK | RALLY | STALL, /*        Pinned     */
+      ATTACK | MOVE | RALLY | STALL, /* Suppressed */
+      ATTACK | MOVE | RALLY | STALL, /* Cowering   */
+      ATTACK | MOVE | RALLY | STALL /*  Berserk    */
   };
 
 }

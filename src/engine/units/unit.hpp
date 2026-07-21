@@ -19,6 +19,9 @@ class Unit {
   bool is_stressed;
   std::optional<HitMarkers> hit;
 
+
+  int8_t stressPenalty() const;
+
   bool canPerformAction(ActionType action) const;
 
 
@@ -33,19 +36,27 @@ class Unit {
   Direction getDirection() const;
   bool isFresh() const;
   bool isStressed() const;
+  bool hasHitmarker() const;
+
+
+  bool isInArc(HexCoord target) const;
 
   uint8_t getAttackRange() const;
   int8_t getFirepower() const;
   int8_t getFlankDefense() const;
   int8_t getFrontDefense() const;
 
+
   bool canAttack() const;
   bool canMove() const;
   bool canRally() const;
+  bool canStall() const;
 
-  int8_t getMoveAPCost() const;
+  int8_t getMoveAPcost() const;
   int8_t getPivotAPcost() const;
-  int8_t getAttackAPCost() const;
+  int8_t getAttackAPcost() const;
+  int8_t getRallyAPcost() const;
+  int8_t getStallAPcost() const;
 
 
   Nation getNation() const;

@@ -4,7 +4,8 @@
 #include <iterator>
 #include <vector>
 
-#include "field/hex.hpp"
+#include "../directions.hpp"
+#include "../field/hex.hpp"
 
 
 enum class ActionType : uint8_t { Attack, Move, Rally, Stall, PlayCard, Pass };
@@ -13,8 +14,13 @@ enum class ActionType : uint8_t { Attack, Move, Rally, Stall, PlayCard, Pass };
 namespace ActionDetails {
 
   struct Target {
-    int8_t unitIdx;
+    uint8_t unitIdx;
     int8_t hitNumber;
+  };
+
+  struct Cost {
+    int8_t action_points;
+    int8_t needs_CAPs;
   };
 
 }
@@ -22,16 +28,18 @@ namespace ActionDetails {
 
 struct Action {
   ActionType type;
-  int8_t unitIndex;
+  ActionDetails::Cost cost;
 
-  int8_t action_check;
-
-  HexCoord target_hex;
+  uint8_t unitIndex;
+  union {
+    HexCoord target_hex;
+    Direction new_direction;
+  };
   std::vector<ActionDetails::Target> targets_for_attack;
 };
 
 
-inline std::vector<Action> operator+=(std::vector<Action>& left, const std::vector<Action>& right) {
+inline std::vector<Action>& operator+=(std::vector<Action>& left, const std::vector<Action>& right) {
   left.reserve(left.size() + right.size());
   left.insert(left.end(), std::make_move_iterator(right.begin()), std::make_move_iterator(right.end()));
   return left;
