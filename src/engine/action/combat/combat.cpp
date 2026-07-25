@@ -1,16 +1,16 @@
 #include "combat.hpp"
 
 
+using namespace Actions;
 using namespace Firezone;
 using namespace ActionDetails;
 using namespace Combat::CombatImpl;
 
 
-namespace Combat {
+namespace Actions::Combat {
 
 
-  std::vector<Action> getCombatActionsForUnit(const ActionGenerationContext& action_context, uint8_t attackerIdx) {
-    std::vector<Action> actions {};
+  void addCombatActionsForUnit(const GenerationContext& action_context, uint8_t attackerIdx) {
     const Unit& attacker {action_context.state.units[attackerIdx]};
 
     for (const auto& [hex, unit_indices] : action_context.units_in_hex) {
@@ -23,12 +23,11 @@ namespace Combat {
 
       if (!targets_and_checks.empty()) {
         Action action {
-            ActionType::Attack, {attacker.getAttackAPcost(), {}}, attackerIdx, hex, std::move(targets_and_checks)};
-        actions.push_back(std::move(action));
+            ActionType::Attack,           {attacker.getAttackAPcost(), attacker.isFresh()}, attackerIdx, hex, {},
+            std::move(targets_and_checks)};
+        action_context.actions.push_back(std::move(action));
       }
     }
-
-    return actions;
   }
 
 
@@ -36,7 +35,7 @@ namespace Combat {
 
 
     std::vector<Target> getTargets(const State& state, const AttackContext& context,
-                                   const std::vector<uint8_t> unit_indices) {
+                                   const std::vector<uint8_t>& unit_indices) {
       std::vector<Target> targets {};
       for (uint8_t enemyIdx : unit_indices) {
         const Unit& defender {state.units[enemyIdx]};

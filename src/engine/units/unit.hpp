@@ -22,7 +22,7 @@ class Unit {
 
   int8_t stressPenalty() const;
 
-  bool canPerformAction(ActionType action) const;
+  bool canPerformAction(Actions::ActionType action) const;
 
 
  public:
@@ -57,6 +57,8 @@ class Unit {
   int8_t getAttackAPcost() const;
   int8_t getRallyAPcost() const;
   int8_t getStallAPcost() const;
+
+  std::optional<int8_t> getRallyNumber() const;
 
 
   Nation getNation() const;

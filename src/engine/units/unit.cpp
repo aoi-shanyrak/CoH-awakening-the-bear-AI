@@ -1,8 +1,10 @@
 #include "unit.hpp"
 #include <cstdint>
+#include <optional>
 
 
 using namespace UnitTypes;
+using namespace Actions;
 using namespace Action_masks;
 
 
@@ -125,6 +127,11 @@ int8_t Unit::getRallyAPcost() const {
 }
 int8_t Unit::getStallAPcost() const {
   return 1 + stressPenalty();
+}
+
+std::optional<int8_t> Unit::getRallyNumber() const {
+  if (!hasHitmarker()) return std::nullopt;
+  return getHitMarkerProps(hit.value()).rally_number;
 }
 
 

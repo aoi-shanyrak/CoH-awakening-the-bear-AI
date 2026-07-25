@@ -8,13 +8,15 @@
 
 using HexUnitsMap = std::map<HexCoord, std::vector<uint8_t>>;
 
-struct ActionGenerationContext {
+struct GenerationContext {
   const State& state;
   HexUnitsMap& units_in_hex;
+  std::vector<Actions::Action>& actions;
 };
 
 
 HexUnitsMap getUnitsInHexes(const State& state);
-bool isAnyEnemyUnitInHex(const ActionGenerationContext& context, HexCoord hex);
+bool isAnyEnemyUnitInHex(const GenerationContext& context, HexCoord hex);
 
-std::vector<Action> generateActionsForUnit(const ActionGenerationContext& context, uint8_t unitIdx);
+void addActionsForUnit(const GenerationContext& context, uint8_t unitIdx);
+void removeActionsCantPay(const GenerationContext& context);

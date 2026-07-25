@@ -4,10 +4,10 @@
 #include "firezone.hpp"
 
 
-namespace Combat {
+namespace Actions::Combat {
 
 
-  std::vector<Action> getCombatActionsForUnit(const ActionGenerationContext& action_context, uint8_t attackerIdx);
+  void addCombatActionsForUnit(const GenerationContext& action_context, uint8_t attackerIdx);
 
 
   namespace CombatImpl {
@@ -20,7 +20,7 @@ namespace Combat {
     };
 
     std::vector<ActionDetails::Target> getTargets(const State& state, const AttackContext& context,
-                                                  const std::vector<uint8_t> unit_indices);
+                                                  const std::vector<uint8_t>& unit_indices);
 
     int8_t getHitNumber(const AttackContext& context, const Unit& defender);
     int8_t getAttackRating(const Unit& attacker, Firezone::RangeType range);

@@ -1,15 +1,16 @@
 #include "movement.hpp"
+#include <vector>
 
 
+using namespace Actions;
 using namespace Movement;
 using namespace MovementImpl;
 
 
-namespace Movement {
+namespace Actions::Movement {
 
 
-  std::vector<Action> getMovementActionsForUnit(const ActionGenerationContext& context, uint8_t unitIdx) {
-    std::vector<Action> actions {};
+  void addMovementActionsForUnit(const GenerationContext& context, uint8_t unitIdx) {
     const Unit& unit {context.state.units[unitIdx]};
     const auto& map {context.state.map};
 
@@ -19,29 +20,23 @@ namespace Movement {
       if (!target_hex_idx) continue;
 
       auto check {static_cast<int8_t>(unit.getMoveAPcost() + (map->get(*target_hex_idx)).getFootPenaltyAP())};
-      Action action {ActionType::Move, {check, {}}, unitIdx, *target_hex_idx, {}};
-      actions.push_back(std::move(action));
+      Action action {ActionType::Move, {check, unit.isFresh()}, unitIdx, *target_hex_idx};
+      context.actions.push_back(std::move(action));
     }
 
-    actions += getPivotActionsForUnit(unit, unitIdx);
-
-    return actions;
+    addPivotActionsForUnit(context.actions, unit, unitIdx);
   }
 
 
   namespace MovementImpl {
 
 
-    std::vector<Action> getPivotActionsForUnit(const Unit& unit, uint8_t unitIdx) {
-      std::vector<Action> actions {};
-
+    void addPivotActionsForUnit(std::vector<Action>& actions, const Unit& unit, uint8_t unitIdx) {
       for (uint8_t i {0}; i < static_cast<uint8_t>(Direction::NorthWest); ++i) {
         auto dir {static_cast<Direction>(i)};
         if (dir == unit.getDirection()) continue;
-
-        actions.push_back({ActionType::Move, unit.getPivotAPcost(), {}, unitIdx, dir, {}});
+        actions.push_back({ActionType::Move, {unit.getPivotAPcost(), unit.isFresh()}, unitIdx, dir});
       }
-      return actions;
     }
 
 

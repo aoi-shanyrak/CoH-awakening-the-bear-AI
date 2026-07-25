@@ -28,10 +28,10 @@ struct HitMarkerProps {
 
 namespace Action_masks {
 
-  static constexpr char ATTACK = 1 << static_cast<char>(ActionType::Attack);
-  static constexpr char MOVE = 1 << static_cast<char>(ActionType::Move);
-  static constexpr char RALLY = 1 << static_cast<char>(ActionType::Rally);
-  static constexpr char STALL = 1 << static_cast<char>(ActionType::Stall);
+  static constexpr char ATTACK = 1 << static_cast<char>(Actions::ActionType::Attack);
+  static constexpr char MOVE = 1 << static_cast<char>(Actions::ActionType::Move);
+  static constexpr char RALLY = 1 << static_cast<char>(Actions::ActionType::Rally);
+  static constexpr char STALL = 1 << static_cast<char>(Actions::ActionType::Stall);
 
   static constexpr std::array<char, 8> ALLOWED_ACTION_MASKS {
       RALLY | STALL, /*                 Stunned    */
