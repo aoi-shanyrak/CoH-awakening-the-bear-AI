@@ -48,6 +48,21 @@ namespace Actions {
 
     std::optional<Card> card;
     ActionType base_action;
+
+    bool canSpendAdditionalCAPs = false;  // если action_points > 0 (свежий юнит)
+    bool canUseAdrenaline = false;  // если юнит Spent (not isFresh)
+    bool canUseCommandAction = false;  // всегда (если есть карта в руке)
+    bool canUseFollowMe = false;  // если у юнита есть Hit Marker и это Rally
+    bool canUseRallyUp = false;  // если у юнита есть Hit Marker и это Rally
+    bool canUseFrontlineOfficer = false;  // любое действие
+    bool canUseSniperFire = false;  // если это Attack
+    bool canUseSeekCover = false;  // если это Move/Stall и есть покрытие
+    bool canUseSwiftAction = false;  // любое действие (бонусная карта)
+    bool canUseCarefulAiming = false;  // если это Attack (бонусная карта)
+    bool canUseLuck = false;  // после проверки (обрабатывается в applyAction)
+    bool canUseVeteranNCO = false;  // бонусная карта, особые условия
+    bool canUseBattlefieldConfusion = false;  // бонусная карта
+    bool canUseRapidDeployment = false;  // бонусная карта
   };
 
 

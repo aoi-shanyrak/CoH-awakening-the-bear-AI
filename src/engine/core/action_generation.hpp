@@ -19,4 +19,4 @@ HexUnitsMap getUnitsInHexes(const State& state);
 bool isAnyEnemyUnitInHex(const GenerationContext& context, HexCoord hex);
 
 void addActionsForUnit(const GenerationContext& context, uint8_t unitIdx);
-void removeActionsCantPay(const GenerationContext& context);
+void filterActionsBaseCost(const GenerationContext& context);
